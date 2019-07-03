@@ -15,7 +15,6 @@ public class NetUtil {
         try {
             address = InetAddress.getByName(host);
         } catch (UnknownHostException e) {
-            System.exit(2);
         }
         System.out.println(address.getHostName() + " IP is = " + address.getHostAddress());
         return address.getHostAddress();
