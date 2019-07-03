@@ -10,12 +10,18 @@ import java.util.List;
  * @Description DynamicRouteService
  **/
 public interface DynamicRouteService {
-
-    <T> void addInvoker(List<Invoker<T>> invokers);
-
     void sortInvokers();
 
     <T> Invoker<T> getInvoker();
 
-    void updateInvokersRank(String invokerId,MonitorInfoBean monitorInfoBean);
+    <T> void initInvokersRank(List<Invoker<T>> invokers);
+
+    void updateInvokersRankByProviderMetaInfo(String invokerId,MonitorInfoBean monitorInfoBean);
+
+    /**
+     * 周期性的 更新
+     * @param statisService
+     */
+    void scheduleUpdateInvokersRank(StatisService statisService);
+
 }
