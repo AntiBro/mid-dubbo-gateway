@@ -1,10 +1,13 @@
 package com.aliware.tianchi.support;
 
+import org.apache.dubbo.rpc.Invoker;
+
+import java.util.List;
 import java.util.Map;
 
 public interface StatisService {
 
-
+    <T> void initInvokers(List<Invoker<T>> invokers);
     /**
      *
      * @param invokerId  {ip:port}
