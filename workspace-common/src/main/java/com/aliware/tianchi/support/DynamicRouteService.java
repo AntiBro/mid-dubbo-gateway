@@ -12,10 +12,25 @@ import java.util.List;
 public interface DynamicRouteService {
     void sortInvokers();
 
+    /**
+     * 动态路由选择
+     * @param <T>
+     * @return
+     */
     <T> Invoker<T> getInvoker();
 
+    /**
+     * 初始化
+     * @param invokers
+     * @param <T>
+     */
     <T> void initInvokersRank(List<Invoker<T>> invokers);
 
+    /**
+     *  根据首次的 物理信息更新
+     * @param invokerId
+     * @param monitorInfoBean
+     */
     void updateInvokersRankByProviderMetaInfo(String invokerId,MonitorInfoBean monitorInfoBean);
 
     /**
