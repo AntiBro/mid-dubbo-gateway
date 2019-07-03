@@ -13,11 +13,9 @@ public interface DynamicRouteService {
 
     <T> void addInvoker(List<Invoker<T>> invokers);
 
-    <T> void addInvoker(Invoker<T> invoker);
-
     void sortInvokers();
 
-    <T> Invoker<T> getInvokers();
+    <T> Invoker<T> getInvoker();
 
     void updateInvokersRank(String invokerId,MonitorInfoBean monitorInfoBean);
 }

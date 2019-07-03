@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
  * @Date 2019/7/3 17:05
  * @Description NetUtil
  **/
-public class NetUtil {
+public class   NetUtil {
 
     public static String hostToIP(String host){
         InetAddress address = null;
