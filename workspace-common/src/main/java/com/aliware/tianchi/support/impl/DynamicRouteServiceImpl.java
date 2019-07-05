@@ -1,9 +1,6 @@
 package com.aliware.tianchi.support.impl;
 
-import com.aliware.tianchi.support.DynamicRouteService;
-import com.aliware.tianchi.support.InvokerWrapper;
-import com.aliware.tianchi.support.MonitorInfoBean;
-import com.aliware.tianchi.support.StatisService;
+import com.aliware.tianchi.support.*;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.*;
@@ -24,7 +21,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final int BOUND = 100;
 
-    static final double SIZE_D = 100.00;
+    static final double SIZE_D = BOUND;
 
     static final int PERIOD = 1000;
 
@@ -38,6 +35,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
 
     private static DynamicRouteService INSTANCE = new DynamicRouteServiceImpl();
+
+    static StatisService statisService = StatisServiceImpl.create();
 
     public static DynamicRouteService create(){
         return INSTANCE;
@@ -76,7 +75,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
             }
             rankCache.add(map);
 
-            StatisServiceImpl.create().initInvokers(invokers);
+            statisService.initInvokers(invokers);
 
             init = true;
         }
@@ -106,8 +105,9 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
+
                     // cal rank
-                    Map<String,Double> statisResult = statisService.getStatis();
+                    Map<String, Double> statisResult = statisService.getStatis();
                     for(Map.Entry<String,Double> entry:statisResult.entrySet()){
                         InvokerWrapper invokerWrapper = rankInfoMap.get(entry.getKey());
                         if(invokerWrapper!=null){

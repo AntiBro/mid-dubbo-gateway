@@ -1,16 +1,15 @@
 package com.aliware.tianchi.support.impl;
 
+import com.aliware.tianchi.support.CostTime;
 import com.aliware.tianchi.support.NetUtil;
 import com.aliware.tianchi.support.StatisService;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.LRUCache;
 import org.apache.dubbo.rpc.Invoker;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -24,15 +23,15 @@ public class StatisServiceImpl implements StatisService {
 
     static final double size_d = size;
 
-    private AtomicLong count = new AtomicLong(1);
+    private  static AtomicLong count = new AtomicLong(1);
    // CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
    // LRUCache lruCache = new LRUCache(size);
     private Map<String,LRUCache> map = new ConcurrentHashMap<>();
 
-    private Map<String,Double> statisMap = new ConcurrentHashMap<>();
+    private Map<String, Double> statisMap = new ConcurrentHashMap<>();
 
-    private Object lock = new Object();
+    private static final long VALIDATE_PERIOD = 100;
 
     private StatisServiceImpl(){}
 
@@ -59,10 +58,14 @@ public class StatisServiceImpl implements StatisService {
         if(cache != null) {
            // synchronized (cache) {
             long  id = count.incrementAndGet();
-            cache.put(count.incrementAndGet(), cost);
+            cache.put(count.incrementAndGet(), new CostTime(cost,System.currentTimeMillis()));
             System.out.println("current costId="+id);
           //  }
         }
+    }
+
+    boolean validateCostTime(long time){
+        return System.currentTimeMillis()-time<=VALIDATE_PERIOD?true:false;
     }
 
     @Override
@@ -71,12 +74,17 @@ public class StatisServiceImpl implements StatisService {
             String invokerId = entry.getKey();
             LRUCache cache = entry.getValue();
             long total = 0;
+            int size = 0;
             for(Object cost:cache.values()){
-                total+= (double)cost;
+                CostTime costTime = (CostTime) cost;
+                if(validateCostTime(costTime.getTimeStramp())){
+                    total+= (double)costTime.getCostTime();
+                    size++;
+                }
             }
             double avgCost = 1000;
-            if(cache.size()>0)
-                avgCost = total/(double)cache.size();
+            if(size>0)
+                avgCost = total/size;
            // cache.clear();
             if(avgCost == 0)
                 avgCost = 1000;
