@@ -15,13 +15,13 @@ public class   NetUtil {
         try {
             address = InetAddress.getByName(host);
         } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
-        System.out.println(address.getHostName() + " IP is = " + address.getHostAddress());
         return address.getHostAddress();
 
     }
 
     public static String getAddress(String host,int port){
-        return hostToIP(host)+port;
+        return hostToIP(host)+":"+port;
     }
 }

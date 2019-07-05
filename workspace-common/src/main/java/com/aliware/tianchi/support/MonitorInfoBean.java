@@ -1,5 +1,7 @@
 package com.aliware.tianchi.support;
 
+import sun.misc.Contended;
+
 /**
  * @Author huaili
  * @Date 2019/7/3 17:16
@@ -7,7 +9,9 @@ package com.aliware.tianchi.support;
  **/
 public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
 
-    private int coreCount;
+    private String providerId;
+
+    private int coreCount = 1;
 
     private double rateOfCpu;
 
@@ -16,7 +20,28 @@ public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
     private String name;
 
     // MB
-    long freeMem;
+    @Contended
+    private long freeMem;
+
+    @Contended
+    private double avgCost = 1000L;
+
+
+    public double getAvgCost() {
+        return avgCost;
+    }
+
+    public void setAvgCost(double avgCost) {
+        this.avgCost = avgCost;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
 
     public long getFreeMem() {
         return freeMem;
@@ -39,7 +64,8 @@ public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
     }
 
     public double getScore(){
-        score = 100*coreCount*(1-rateOfCpu/100.00)*freeMem;
+        score = coreCount*freeMem/avgCost;
+       // System.out.println("MonitorInfoBean score="+score+"  coreCount="+coreCount+"  freemMm="+freeMem+"  avgCost="+avgCost);
         return score;
     }
     public int getCoreCount() {

@@ -1,5 +1,8 @@
 package com.aliware.tianchi;
 
+import com.aliware.tianchi.support.MonitorInfoBean;
+import com.aliware.tianchi.support.impl.DynamicRouteServiceImpl;
+import com.google.gson.Gson;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 
 /**
@@ -14,7 +17,10 @@ public class CallbackListenerImpl implements CallbackListener {
 
     @Override
     public void receiveServerMsg(String msg) {
-        System.out.println("receive msg from server :" + msg);
+        Gson gson = new Gson();
+        MonitorInfoBean monitorInfoBean = gson.fromJson(msg, MonitorInfoBean.class);
+        DynamicRouteServiceImpl.create().updateInvokersRankByProviderMetaInfo(monitorInfoBean.getProviderId(),monitorInfoBean);
+      //  System.out.println("receive msg from server :" + msg);
     }
 
 }

@@ -1,5 +1,9 @@
 package com.aliware.tianchi;
 
+import com.aliware.tianchi.support.MonitorInfoBean;
+import com.aliware.tianchi.support.MonitorUtil;
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 
@@ -25,14 +29,22 @@ public class CallbackServiceImpl implements CallbackService {
                 if (!listeners.isEmpty()) {
                     for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
                         try {
-                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
+
+                            MonitorInfoBean monitorInfoBean = MonitorUtil.getMonitorInfoBean();
+                            if(IDUtil.getID() != null ){
+                                Gson gson = new Gson();
+                                monitorInfoBean.setProviderId(IDUtil.getID());
+                                entry.getValue().receiveServerMsg(gson.toJson(monitorInfoBean)); // send notification for change
+
+                            }
+                           // entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
                         } catch (Throwable t1) {
                             listeners.remove(entry.getKey());
                         }
                     }
                 }
             }
-        }, 0, 5000);
+        }, 0, 3000);
     }
 
     private Timer timer = new Timer();
@@ -46,6 +58,12 @@ public class CallbackServiceImpl implements CallbackService {
     @Override
     public void addListener(String key, CallbackListener listener) {
         listeners.put(key, listener);
-        listener.receiveServerMsg(new Date().toString()); // send notification for change
+        MonitorInfoBean monitorInfoBean = MonitorUtil.getMonitorInfoBean();
+        if(IDUtil.getID() != null ){
+            Gson gson = new Gson();
+            monitorInfoBean.setProviderId(IDUtil.getID());
+            listener.receiveServerMsg(gson.toJson(monitorInfoBean)); // send notification for change
+
+        }
     }
 }

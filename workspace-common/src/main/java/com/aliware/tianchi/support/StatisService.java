@@ -13,7 +13,7 @@ public interface StatisService {
      * @param invokerId  {ip:port}
      * @param cost
      */
-    void addInvokerCostTime(String invokerId,long cost);
+    void addInvokerCostTime(String invokerId,double cost);
 
 
     /**

@@ -1,5 +1,8 @@
 package com.aliware.tianchi;
 
+import com.aliware.tianchi.support.DynamicRouteService;
+import com.aliware.tianchi.support.impl.DynamicRouteServiceImpl;
+import com.aliware.tianchi.support.impl.StatisServiceImpl;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
@@ -19,13 +22,15 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class UserLoadBalance implements LoadBalance {
 
+
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+        DynamicRouteService dynamicRouteService = DynamicRouteServiceImpl.create();
 
-        int index = ThreadLocalRandom.current().nextInt(invokers.size());
-        System.out.println("当前的Invoker 个数:"+invokers.size());
-        System.out.println("选中的index:"+index);
+        //System.out.println("当前的Invoker 个数:"+invokers.size());
 
-        return invokers.get(index);
+        dynamicRouteService.initInvokersRank(invokers);
+        dynamicRouteService.scheduleUpdateInvokersRank(StatisServiceImpl.create());
+        return dynamicRouteService.getInvoker();
     }
 }

@@ -1,5 +1,7 @@
 package com.aliware.tianchi;
 
+import com.aliware.tianchi.support.NetUtil;
+import com.aliware.tianchi.support.impl.StatisServiceImpl;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.Filter;
@@ -24,8 +26,7 @@ public class TestClientFilter implements Filter {
             Result result = invoker.invoke(invocation);
             long endtime = System.currentTimeMillis();
             long cost = endtime - startTime;
-
-
+            StatisServiceImpl.create().addInvokerCostTime(NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort()), cost);
             return result;
         }catch (Exception e){
             throw e;
