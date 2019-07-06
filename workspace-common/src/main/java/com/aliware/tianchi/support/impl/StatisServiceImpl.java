@@ -67,7 +67,8 @@ public class StatisServiceImpl implements StatisService {
     }
 
     boolean validateCostTime(long time){
-        return System.currentTimeMillis()-time<=VALIDATE_PERIOD?true:false;
+        //return System.currentTimeMillis()-time<=VALIDATE_PERIOD?true:false;
+        return true;
     }
 
     @Override
