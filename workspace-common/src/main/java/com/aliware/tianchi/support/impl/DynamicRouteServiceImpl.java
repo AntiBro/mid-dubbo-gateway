@@ -29,7 +29,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
-    List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
+    //List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
 
     List<Invoker> list = new ArrayList<>();
 
@@ -37,7 +37,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
    // private Timer timer = new Timer();
 
-    private ScheduledExecutorService scheduledExecutorService;
+    private static ScheduledExecutorService scheduledExecutorService;
 
 
     private static DynamicRouteService INSTANCE = new DynamicRouteServiceImpl();
@@ -78,7 +78,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
                 //System.out.println("scheduleAtFixedRate total score="+total);
                 TreeMap<Double, InvokerWrapper> treeMap = new TreeMap<>();
-                cacheinvokerList.clear();
+
+                List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
 
                 for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
                     double rank = entry.getValue().getMonitorInfoBean().getScore()/total;
