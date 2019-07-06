@@ -1,6 +1,7 @@
 package com.aliware.tianchi.support;
 
 import org.apache.dubbo.rpc.Invoker;
+import sun.misc.Contended;
 
 /**
  * @Author huaili
@@ -15,6 +16,7 @@ public class InvokerWrapper<T> implements Comparable<InvokerWrapper>{
 
     private MonitorInfoBean monitorInfoBean;
 
+    @Contended
     private double rankScore;
 
     public double getRankScore() {

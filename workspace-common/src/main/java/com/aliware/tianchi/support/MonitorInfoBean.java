@@ -63,11 +63,16 @@ public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
         this.score = score;
     }
 
-    public double getScore(){
+    public double getCalacScore(){
         score = coreCount*freeMem/avgCost;
        // System.out.println("MonitorInfoBean score="+score+"  coreCount="+coreCount+"  freemMm="+freeMem+"  avgCost="+avgCost);
         return score;
     }
+
+    public double getScore() {
+        return score;
+    }
+
     public int getCoreCount() {
         return coreCount;
     }
@@ -86,6 +91,6 @@ public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
 
     @Override
     public int compareTo(MonitorInfoBean o) {
-        return this.getScore()>o.getScore()?1:-1;
+        return this.getCalacScore()>o.getCalacScore()?1:-1;
     }
 }

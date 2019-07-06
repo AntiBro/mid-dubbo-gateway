@@ -1,14 +1,11 @@
 package com.aliware.tianchi;
 
 import com.aliware.tianchi.support.NetUtil;
+import com.aliware.tianchi.support.StatisService;
 import com.aliware.tianchi.support.impl.StatisServiceImpl;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
-import org.apache.dubbo.rpc.Filter;
-import org.apache.dubbo.rpc.Invocation;
-import org.apache.dubbo.rpc.Invoker;
-import org.apache.dubbo.rpc.Result;
-import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.*;
 
 /**
  * @author daofeng.xjf
@@ -19,17 +16,21 @@ import org.apache.dubbo.rpc.RpcException;
  */
 @Activate(group = Constants.CONSUMER)
 public class TestClientFilter implements Filter {
+
+    private static StatisService statisService = StatisServiceImpl.create();
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        long startTime = System.currentTimeMillis();
         try{
-            long startTime = System.currentTimeMillis();
             Result result = invoker.invoke(invocation);
-            long endtime = System.currentTimeMillis();
-            long cost = endtime - startTime;
-            StatisServiceImpl.create().addInvokerCostTime(NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort()), cost);
             return result;
         }catch (Exception e){
             throw e;
+        }finally {
+            long endtime = System.currentTimeMillis();
+            long cost = endtime - startTime;
+            statisService.addInvokerCostTime(NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort()), cost);
+
         }
 
     }

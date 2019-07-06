@@ -24,12 +24,12 @@ public class DyRandomTest {
         Collections.sort(list);
         double totalSocre = 0;
         for(MonitorInfoBean e:list){
-            totalSocre += e.getScore();
+            totalSocre += e.getCalacScore();
         }
         TreeMap<Double,String> mapRate = new TreeMap<>();
         double rate = 0;
         for(MonitorInfoBean e:list){
-            rate += e.getScore()/totalSocre;
+            rate += e.getCalacScore()/totalSocre;
             mapRate.put(rate,e.getName());
         }
         if(treeMapslist.isEmpty()){
@@ -79,7 +79,7 @@ public class DyRandomTest {
         mm.setFreeMem(220);
         mm.setAvgCost(1000);
 
-        System.out.println(mm.getScore());
+        System.out.println(mm.getCalacScore());
 
 
     }

@@ -23,7 +23,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double SIZE_D = BOUND;
 
-    static final int PERIOD = 1000;
+    static final int PERIOD = 100;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -118,7 +118,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
                     double total = 0;
                     for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
-                        total+= entry.getValue().getMonitorInfoBean().getScore();
+                        total+= entry.getValue().getMonitorInfoBean().getCalacScore();
                     }
 
                     //System.out.println("scheduleAtFixedRate total score="+total);
