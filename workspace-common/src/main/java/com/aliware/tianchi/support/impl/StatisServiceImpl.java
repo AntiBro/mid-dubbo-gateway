@@ -19,7 +19,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static StatisService INSTANCE = new StatisServiceImpl();
 
-    static final int size = 30;
+    static final int size = 100;
 
     static final double size_d = size;
 
@@ -59,7 +59,7 @@ public class StatisServiceImpl implements StatisService {
            // synchronized (cache) {
             long  id = count.incrementAndGet();
             cache.put(count.incrementAndGet(), new CostTime(cost,System.currentTimeMillis()));
-            System.out.println("current costId="+id);
+            //System.out.println("current costId="+id);
           //  }
         }
     }

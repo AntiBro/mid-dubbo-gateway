@@ -23,7 +23,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double SIZE_D = BOUND;
 
-    static final int PERIOD = 100;
+    static final int PERIOD = 5000;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -57,7 +57,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
         InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
 
-        //System.out.println("select invoker id = "+invokerWrapper.getInvokerId());
+        System.out.println("select invoker id = "+invokerWrapper.getInvoker().getUrl());
         return invokerWrapper.getInvoker();
     }
 
