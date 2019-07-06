@@ -33,6 +33,8 @@ public class StatisServiceImpl implements StatisService {
 
     private static final long VALIDATE_PERIOD = 1000;
 
+    private static final double defaultAvgCost = 2000;
+
     private StatisServiceImpl(){}
 
     public static StatisService create(){
@@ -82,12 +84,12 @@ public class StatisServiceImpl implements StatisService {
                     size++;
                 }
             }
-            double avgCost = 1000;
+            double avgCost = defaultAvgCost;
             if(size>0)
                 avgCost = total/size;
            // cache.clear();
             if(avgCost == 0)
-                avgCost = 1000;
+                avgCost = defaultAvgCost;
             statisMap.put(invokerId,avgCost);
             //System.out.println("getStatis invokerId="+invokerId+" avgcost="+avgCost);
         }
