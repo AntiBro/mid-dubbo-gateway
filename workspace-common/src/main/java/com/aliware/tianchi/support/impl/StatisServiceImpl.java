@@ -31,7 +31,7 @@ public class StatisServiceImpl implements StatisService {
 
     private Map<String, Double> statisMap = new ConcurrentHashMap<>();
 
-    private static final long VALIDATE_PERIOD = 100;
+    private static final long VALIDATE_PERIOD = 1000;
 
     private StatisServiceImpl(){}
 

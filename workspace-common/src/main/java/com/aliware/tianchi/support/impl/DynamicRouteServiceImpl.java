@@ -1,12 +1,14 @@
 package com.aliware.tianchi.support.impl;
 
-import com.aliware.tianchi.support.*;
+import com.aliware.tianchi.support.DynamicRouteService;
+import com.aliware.tianchi.support.InvokerWrapper;
+import com.aliware.tianchi.support.MonitorInfoBean;
+import com.aliware.tianchi.support.StatisService;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Author huaili
@@ -23,26 +25,88 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double SIZE_D = BOUND;
 
-    static final int PERIOD = 5000;
+    static final int PERIOD = 3000;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
     List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
 
+    List<Invoker> list = new ArrayList<>();
+
     static volatile ConcurrentHashMap<String,InvokerWrapper> rankInfoMap = new ConcurrentHashMap<>();
 
-    private Timer timer = new Timer();
+   // private Timer timer = new Timer();
+
+    private ScheduledExecutorService scheduledExecutorService;
 
 
     private static DynamicRouteService INSTANCE = new DynamicRouteServiceImpl();
 
     static StatisService statisService = StatisServiceImpl.create();
 
+    static Map<String, AtomicLong > countTotal = new HashMap<>();
+
     public static DynamicRouteService create(){
         return INSTANCE;
     }
 
     private DynamicRouteServiceImpl(){
+        scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+
+                // cal rank
+                Map<String, Double> statisResult = statisService.getStatis();
+                if(statisResult.isEmpty()){
+                    return;
+                }
+
+                for(Map.Entry<String,Double> entry:statisResult.entrySet()){
+                    InvokerWrapper invokerWrapper = rankInfoMap.get(entry.getKey());
+                    if(invokerWrapper!=null){
+                        invokerWrapper.getMonitorInfoBean().setAvgCost(entry.getValue());
+                    }
+
+                }
+
+                double total = 0;
+                for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
+                    total+= entry.getValue().getMonitorInfoBean().getCalacScore();
+                }
+
+                //System.out.println("scheduleAtFixedRate total score="+total);
+                TreeMap<Double, InvokerWrapper> treeMap = new TreeMap<>();
+                cacheinvokerList.clear();
+
+                for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
+                    double rank = entry.getValue().getMonitorInfoBean().getScore()/total;
+                    entry.getValue().setRankScore(rank);
+                    cacheinvokerList.add(entry.getValue());
+                }
+                Collections.sort(cacheinvokerList);
+
+                total = 0;
+                for(InvokerWrapper invokerWrapper:cacheinvokerList){
+                    total+=invokerWrapper.getRankScore();
+                    treeMap.put(total,invokerWrapper);
+                    System.out.println("rank score="+total+" invokerId="+invokerWrapper.getInvokerId());
+                }
+                if(rankCache.isEmpty()){
+                    rankCache.add(treeMap);
+                } else {
+                    rankCache.set(0,treeMap);
+                }
+
+
+                for(Map.Entry<String,AtomicLong> entry:countTotal.entrySet()){
+                    System.out.println("invokerId= "+entry.getKey()+"  shotCount="+entry.getValue().get());
+                }
+            }
+
+
+        },3000,PERIOD,TimeUnit.MILLISECONDS);
 
     }
 
@@ -58,7 +122,10 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
         InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
 
         System.out.println("select invoker id = "+invokerWrapper.getInvoker().getUrl());
+        AtomicLong count = countTotal.get(invokerWrapper.getInvokerId());
+        count.incrementAndGet();
         return invokerWrapper.getInvoker();
+        //return list.get(ThreadLocalRandom.current().nextInt(list.size()));
     }
 
     @Override
@@ -72,10 +139,13 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
                 map.put(ceilScore,InvokerWrapper.buildWrapper(invoker));
                 rankInfoMap.put(invokerWrapper.getInvokerId(),invokerWrapper);
+                countTotal.put(invokerWrapper.getInvokerId(),new AtomicLong(1));
             }
             rankCache.add(map);
 
             statisService.initInvokers(invokers);
+
+            list.addAll(invokers);
 
             init = true;
         }
@@ -100,52 +170,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
      */
     @Override
     public void scheduleUpdateInvokersRank(StatisService statisService) {
-        if(!startTask){
+        if(!startTask && init){
             startTask = true;
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-
-                    // cal rank
-                    Map<String, Double> statisResult = statisService.getStatis();
-                    for(Map.Entry<String,Double> entry:statisResult.entrySet()){
-                        InvokerWrapper invokerWrapper = rankInfoMap.get(entry.getKey());
-                        if(invokerWrapper!=null){
-                            invokerWrapper.getMonitorInfoBean().setAvgCost(entry.getValue());
-                        }
-
-                    }
-
-                    double total = 0;
-                    for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
-                        total+= entry.getValue().getMonitorInfoBean().getCalacScore();
-                    }
-
-                    //System.out.println("scheduleAtFixedRate total score="+total);
-                    TreeMap<Double, InvokerWrapper> treeMap = new TreeMap<>();
-                    cacheinvokerList.clear();
-
-                    for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
-                        double rank = entry.getValue().getMonitorInfoBean().getScore()/total;
-                        entry.getValue().setRankScore(rank);
-                        cacheinvokerList.add(entry.getValue());
-                    }
-                    Collections.sort(cacheinvokerList);
-
-                    total = 0;
-                    for(InvokerWrapper invokerWrapper:cacheinvokerList){
-                        total+=invokerWrapper.getRankScore();
-                        treeMap.put(total,invokerWrapper);
-                       // System.out.println("rank score="+total+" invokerId="+invokerWrapper.getInvokerId());
-                    }
-                    if(rankCache.isEmpty()){
-                        rankCache.add(treeMap);
-                    } else {
-                        rankCache.set(0,treeMap);
-                    }
-                }
-            },0,PERIOD);
-
 
         }
     }

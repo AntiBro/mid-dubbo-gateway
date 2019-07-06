@@ -3,11 +3,9 @@ package com.aliware.tianchi;
 import com.aliware.tianchi.support.MonitorInfoBean;
 import com.aliware.tianchi.support.MonitorUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,12 +37,12 @@ public class CallbackServiceImpl implements CallbackService {
                             }
                            // entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
                         } catch (Throwable t1) {
-                            listeners.remove(entry.getKey());
+                            //listeners.remove(entry.getKey());
                         }
                     }
                 }
             }
-        }, 0, 3000);
+        }, 0, 100);
     }
 
     private Timer timer = new Timer();
