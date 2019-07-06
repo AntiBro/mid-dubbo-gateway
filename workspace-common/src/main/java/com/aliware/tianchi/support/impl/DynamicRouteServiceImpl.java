@@ -8,7 +8,6 @@ import org.apache.dubbo.rpc.Invoker;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Author huaili
@@ -44,7 +43,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static StatisService statisService = StatisServiceImpl.create();
 
-    static Map<String, AtomicLong > countTotal = new HashMap<>();
+   // static Map<String, AtomicLong > countTotal = new HashMap<>();
 
     public static DynamicRouteService create(){
         return INSTANCE;
@@ -101,9 +100,9 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 }
 
 
-                for(Map.Entry<String,AtomicLong> entry:countTotal.entrySet()){
-                    System.out.println("invokerId= "+entry.getKey()+"  shotCount="+entry.getValue().get());
-                }
+//                for(Map.Entry<String,AtomicLong> entry:countTotal.entrySet()){
+//                    System.out.println("invokerId= "+entry.getKey()+"  shotCount="+entry.getValue().get());
+//                }
             }
 
 
@@ -123,8 +122,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
         InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
 
         System.out.println("select invoker id = "+invokerWrapper.getInvoker().getUrl());
-        AtomicLong count = countTotal.get(invokerWrapper.getInvokerId());
-        count.incrementAndGet();
+      //  AtomicLong count = countTotal.get(invokerWrapper.getInvokerId());
+      //  count.incrementAndGet();
         return invokerWrapper.getInvoker();
         //return list.get(ThreadLocalRandom.current().nextInt(list.size()));
     }
@@ -140,7 +139,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
                 map.put(ceilScore,InvokerWrapper.buildWrapper(invoker));
                 rankInfoMap.put(invokerWrapper.getInvokerId(),invokerWrapper);
-                countTotal.put(invokerWrapper.getInvokerId(),new AtomicLong(1));
+                //countTotal.put(invokerWrapper.getInvokerId(),new AtomicLong(1));
             }
             rankCache.add(map);
 
