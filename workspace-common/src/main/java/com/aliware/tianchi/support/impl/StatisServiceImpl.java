@@ -19,7 +19,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static StatisService INSTANCE = new StatisServiceImpl();
 
-    static final int size = 100;
+    static final int size = 20;
 
     static final double size_d = size;
 
@@ -27,9 +27,9 @@ public class StatisServiceImpl implements StatisService {
    // CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
    // LRUCache lruCache = new LRUCache(size);
-    private Map<String,LRUCache> map = new ConcurrentHashMap<>();
+    private static volatile Map<String,LRUCache> map = new ConcurrentHashMap<>();
 
-    private Map<String, Double> statisMap = new ConcurrentHashMap<>();
+    private static volatile Map<String, Double> statisMap = new ConcurrentHashMap<>();
 
     private static final long VALIDATE_PERIOD = 1000;
 
@@ -57,8 +57,8 @@ public class StatisServiceImpl implements StatisService {
         final LRUCache cache = map.get(invokerId);
         if(cache != null) {
            // synchronized (cache) {
-            long  id = count.incrementAndGet();
-            cache.put(count.incrementAndGet(), new CostTime(cost,System.currentTimeMillis()));
+           // long  id = count.incrementAndGet();
+            cache.put(System.nanoTime(), new CostTime(cost,System.currentTimeMillis()));
             //System.out.println("current costId="+id);
           //  }
         }
