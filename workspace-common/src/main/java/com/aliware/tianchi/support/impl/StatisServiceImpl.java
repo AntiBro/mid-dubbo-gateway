@@ -9,7 +9,7 @@ import org.apache.dubbo.rpc.Invoker;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -37,6 +37,13 @@ public class StatisServiceImpl implements StatisService {
 
     private StatisServiceImpl(){}
 
+
+    static ExecutorService executor = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
+            Runtime.getRuntime().availableProcessors(),300, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(8000000));
+
+
+
+
     public static StatisService create(){
         return INSTANCE;
     }
@@ -56,14 +63,21 @@ public class StatisServiceImpl implements StatisService {
 
     @Override
     public void addInvokerCostTime(String invokerId, double cost) {
-        final LRUCache cache = map.get(invokerId);
-        if(cache != null) {
-           // synchronized (cache) {
-           // long  id = count.incrementAndGet();
-            cache.put(System.nanoTime(), new CostTime(cost,System.currentTimeMillis()));
-            //System.out.println("current costId="+id);
-          //  }
-        }
+
+        executor.execute(()->{
+
+            final LRUCache cache = map.get(invokerId);
+            if(cache != null) {
+                // synchronized (cache) {
+                // long  id = count.incrementAndGet();
+                cache.put(System.nanoTime(), new CostTime(cost,System.currentTimeMillis()));
+                //System.out.println("current costId="+id);
+                //  }
+            }
+
+        });
+
+
     }
 
     boolean validateCostTime(long time){
