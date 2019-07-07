@@ -157,7 +157,9 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
         if(invokerWrapper != null){
             // update free memory for invoker
             MonitorInfoBean monitorInfoBean1 = invokerWrapper.getMonitorInfoBean();
-            monitorInfoBean1.setFreeMem(monitorInfoBean.getFreeMem());
+            if(monitorInfoBean.getFreeMem()>0)
+                monitorInfoBean1.setFreeMem(monitorInfoBean.getFreeMem());
+            if(monitorInfoBean.getCoreCount()>0)
             monitorInfoBean1.setCoreCount(monitorInfoBean.getCoreCount());
 
         }
