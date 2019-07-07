@@ -19,7 +19,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static StatisService INSTANCE = new StatisServiceImpl();
 
-    static final int size = 10;
+    static final int size = 100;
 
     static final double size_d = size;
 
@@ -33,7 +33,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static final long VALIDATE_PERIOD = 1000;
 
-    private static final double defaultAvgCost = 2000;
+    private static final double defaultAvgCost = 1000;
 
     private StatisServiceImpl(){}
 
@@ -64,8 +64,7 @@ public class StatisServiceImpl implements StatisService {
     @Override
     public void addInvokerCostTime(String invokerId, double cost) {
 
-        executor.execute(()->{
-
+        CompletableFuture.runAsync(()->{
             final LRUCache cache = map.get(invokerId);
             if(cache != null) {
                 // synchronized (cache) {
@@ -76,6 +75,18 @@ public class StatisServiceImpl implements StatisService {
             }
 
         });
+//        executor.execute(()->{
+//
+//            final LRUCache cache = map.get(invokerId);
+//            if(cache != null) {
+//                // synchronized (cache) {
+//                // long  id = count.incrementAndGet();
+//                cache.put(System.nanoTime(), new CostTime(cost,System.currentTimeMillis()));
+//                //System.out.println("current costId="+id);
+//                //  }
+//            }
+//
+//        });
 
 
     }
