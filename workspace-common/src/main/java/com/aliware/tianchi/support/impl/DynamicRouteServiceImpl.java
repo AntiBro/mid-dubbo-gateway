@@ -20,13 +20,13 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static volatile boolean startTask = false;
 
-    static final int BOUND = 10;
+    static final int BOUND = 100;
 
     static final double SIZE_D = BOUND;
 
     static final int PERIOD = 2000;
 
-    static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
+    static volatile CopyOnWriteArrayList<TreeMap<Integer, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
     //List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 }
 
                 //System.out.println("scheduleAtFixedRate total score="+total);
-                TreeMap<Double, InvokerWrapper> treeMap = new TreeMap<>();
+                TreeMap<Integer, InvokerWrapper> treeMap = new TreeMap<>();
 
                 List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
 
@@ -87,11 +87,16 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 }
                 Collections.sort(cacheinvokerList);
 
-                total = 0;
+                int newTotal = 0;
                 for(InvokerWrapper invokerWrapper:cacheinvokerList){
-                    total+=invokerWrapper.getRankScore();
-                    treeMap.put(total,invokerWrapper);
-                    System.out.println("rank score="+total+" invokerId="+invokerWrapper.getInvokerId());
+                    System.out.println(invokerWrapper.getRankScore()*100);
+                    int temp =(int)invokerWrapper.getRankScore()*100;
+                    if(temp == 0) {
+                        temp = 1;
+                    }
+                    newTotal += temp;
+                    treeMap.put(newTotal,invokerWrapper);
+                    System.out.println("rank score="+newTotal+" invokerId="+invokerWrapper.getInvokerId());
                 }
                 if(rankCache.isEmpty()){
                     rankCache.add(treeMap);
@@ -117,9 +122,14 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     @Override
     public <T> Invoker<T> getInvoker() {
-        double score = ThreadLocalRandom.current().nextInt(BOUND)/SIZE_D;
+        int score = ThreadLocalRandom.current().nextInt(BOUND);
 
-        InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
+        Map.Entry<Integer,InvokerWrapper> entry = rankCache.get(0).ceilingEntry(score);
+
+        if(entry == null){
+            entry = rankCache.get(0).lastEntry();
+        }
+        InvokerWrapper invokerWrapper = entry.getValue();
 
         System.out.println("select invoker id = "+invokerWrapper.getInvoker().getUrl());
       //  AtomicLong count = countTotal.get(invokerWrapper.getInvokerId());
@@ -131,9 +141,9 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
     @Override
     public <T> void initInvokersRank(List<Invoker<T>> invokers) {
         if(!init){
-            TreeMap<Double,InvokerWrapper> map = new TreeMap<>();
-            double score = 1.00/invokers.size();
-            double ceilScore = 0;
+            TreeMap<Integer,InvokerWrapper> map = new TreeMap<>();
+            double score = 1.00/invokers.size()*100;
+            int ceilScore = 0;
             for(Invoker invoker:invokers){
                 ceilScore+= score;
                 InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
@@ -141,6 +151,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 rankInfoMap.put(invokerWrapper.getInvokerId(),invokerWrapper);
                 //countTotal.put(invokerWrapper.getInvokerId(),new AtomicLong(1));
             }
+
             rankCache.add(map);
 
             statisService.initInvokers(invokers);
@@ -157,10 +168,12 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
         if(invokerWrapper != null){
             // update free memory for invoker
             MonitorInfoBean monitorInfoBean1 = invokerWrapper.getMonitorInfoBean();
-            if(monitorInfoBean.getFreeMem()>0)
+            if(monitorInfoBean.getFreeMem()>0) {
                 monitorInfoBean1.setFreeMem(monitorInfoBean.getFreeMem());
-            if(monitorInfoBean.getCoreCount()>0)
-            monitorInfoBean1.setCoreCount(monitorInfoBean.getCoreCount());
+            }
+            if(monitorInfoBean.getCoreCount()>0) {
+                monitorInfoBean1.setCoreCount(monitorInfoBean.getCoreCount());
+            }
 
         }
     }
