@@ -20,7 +20,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static volatile boolean startTask = false;
 
-    static final int BOUND = 100;
+    static final int BOUND = 1000;
 
     static final double SIZE_D = BOUND;
 
@@ -39,7 +39,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
     private static ScheduledExecutorService scheduledExecutorService;
 
 
-    private static DynamicRouteService INSTANCE = new DynamicRouteServiceImpl();
+    private static volatile DynamicRouteService INSTANCE = new DynamicRouteServiceImpl();
 
     static StatisService statisService = StatisServiceImpl.create();
 
@@ -106,7 +106,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
             }
 
 
-        },3000,PERIOD,TimeUnit.MILLISECONDS);
+        },800,PERIOD,TimeUnit.MILLISECONDS);
 
     }
 

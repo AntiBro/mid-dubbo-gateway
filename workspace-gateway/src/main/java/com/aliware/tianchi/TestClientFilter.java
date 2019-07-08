@@ -21,13 +21,15 @@ public class TestClientFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         long startTime = System.currentTimeMillis();
+        long endtime = 0;
         try{
             Result result = invoker.invoke(invocation);
             return result;
         }catch (Exception e){
+            endtime = endtime + 5000;
             throw e;
         }finally {
-            long endtime = System.currentTimeMillis();
+            endtime = endtime + System.currentTimeMillis();
             long cost = endtime - startTime;
             statisService.addInvokerCostTime(NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort()), cost);
 
