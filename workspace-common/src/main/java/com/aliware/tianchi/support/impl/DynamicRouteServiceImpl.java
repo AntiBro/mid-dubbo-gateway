@@ -20,7 +20,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static volatile boolean startTask = false;
 
-    static final int BOUND = 1000;
+    static final int BOUND = 10;
 
     static final double SIZE_D = BOUND;
 
