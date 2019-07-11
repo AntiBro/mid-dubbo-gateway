@@ -2,6 +2,7 @@ package com.aliware.tianchi.support;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -83,22 +84,33 @@ public class DyRandomTest {
 //        System.out.println(mm.getCalacScore());
 
 
-        int count = 1000000;
-        long startTimeNao = System.currentTimeMillis();
-        for(int i=0;i<count;i++){
-            long l = System.nanoTime();
-        }
-        long endTimeNao = System.currentTimeMillis();
-        System.out.println("nanao cost Time="+(endTimeNao-startTimeNao));
+        int count = 10;
+        int k = 10;
+
+        AtomicLong atomicLong = new AtomicLong();
+        while(k>0) {
+            long startTimeNao = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                //ThreadLocalRandom.current().nextDouble(100.999);
+               // System.nanoTime();
+                Runtime.getRuntime().availableProcessors();
+                //Runtime.getRuntime().freeMemory();
+            }
+            long endTimeNao = System.currentTimeMillis();
+            System.out.println("nanao cost Time=" + (endTimeNao - startTimeNao));
+
+            long startTimeCAS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                atomicLong.incrementAndGet();
+            }
+            long endTimeCAS = System.currentTimeMillis();
+            System.out.println("cas cost Time=" + (endTimeCAS - startTimeCAS));
 
 
-        AtomicLong atomicLong = new AtomicLong(0);
-        long startTimeCAS = System.currentTimeMillis();
-        for(int i=0;i<count;i++){
-            atomicLong.incrementAndGet();
+            k--;
         }
-        long endTimeCAS = System.currentTimeMillis();
-        System.out.println("cas cost Time="+(endTimeCAS-startTimeCAS));
+
+       // System.out.println(atomicLong.get());
 
     }
 }

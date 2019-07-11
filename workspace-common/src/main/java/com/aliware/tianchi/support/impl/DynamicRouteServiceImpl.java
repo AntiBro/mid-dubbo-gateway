@@ -24,7 +24,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double BOUND_D = 0.999;
 
-    static final int PERIOD = 2000;
+    static final int PERIOD = 50;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -75,7 +75,6 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                     total+= entry.getValue().getMonitorInfoBean().getCalacScore();
                 }
 
-                //System.out.println("scheduleAtFixedRate total score="+total);
                 TreeMap<Double, InvokerWrapper> treeMap = new TreeMap<>();
 
                 List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
@@ -91,7 +90,6 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 for(InvokerWrapper invokerWrapper:cacheinvokerList){
                     total+=invokerWrapper.getRankScore();
                     treeMap.put(total,invokerWrapper);
-                    System.out.println("rank score="+total+" invokerId="+invokerWrapper.getInvokerId());
                 }
                 if(rankCache.isEmpty()){
                     rankCache.add(treeMap);
@@ -118,14 +116,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
     @Override
     public <T> Invoker<T> getInvoker() {
         double score = ThreadLocalRandom.current().nextDouble(BOUND_D);
-
         InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
-
-        System.out.println("select invoker id = "+invokerWrapper.getInvoker().getUrl());
-      //  AtomicLong count = countTotal.get(invokerWrapper.getInvokerId());
-      //  count.incrementAndGet();
         return invokerWrapper.getInvoker();
-        //return list.get(ThreadLocalRandom.current().nextInt(list.size()));
     }
 
     @Override
@@ -139,7 +131,6 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
                 map.put(ceilScore,InvokerWrapper.buildWrapper(invoker));
                 rankInfoMap.put(invokerWrapper.getInvokerId(),invokerWrapper);
-                //countTotal.put(invokerWrapper.getInvokerId(),new AtomicLong(1));
             }
             rankCache.add(map);
 
