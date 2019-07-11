@@ -24,7 +24,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double BOUND_D = 0.99;
 
-    static final int PERIOD = 50;
+    static final int PERIOD = 30;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
