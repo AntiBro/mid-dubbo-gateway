@@ -239,4 +239,23 @@ public class MonitorUtil {
         return monitorInfoBean;
     }
 
+    public static String getMonitorInfoMsg(String provideId){
+        StringBuilder sb = new StringBuilder();
+        sb.append(Runtime.getRuntime().availableProcessors())
+                .append(",")
+                .append(Runtime.getRuntime().freeMemory()/MB)
+                .append(",")
+                .append(provideId);
+        return sb.toString();
+    }
+
+    public static MonitorInfoBean parseStr(String msg){
+        MonitorInfoBean monitorInfoBean = new MonitorInfoBean();
+        String[] msgs = msg.split(",");
+        monitorInfoBean.setCoreCount(Integer.parseInt(msgs[0]));
+        monitorInfoBean.setFreeMem(Long.parseLong(msgs[1]));
+        monitorInfoBean.setProviderId(msgs[2]);
+        return monitorInfoBean;
+    }
+
 }

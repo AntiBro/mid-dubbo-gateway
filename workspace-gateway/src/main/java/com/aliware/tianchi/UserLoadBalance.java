@@ -30,7 +30,7 @@ public class UserLoadBalance implements LoadBalance {
         //System.out.println("当前的Invoker 个数:"+invokers.size());
 
         dynamicRouteService.initInvokersRank(invokers);
-        dynamicRouteService.scheduleUpdateInvokersRank(StatisServiceImpl.create());
+//        dynamicRouteService.scheduleUpdateInvokersRank(StatisServiceImpl.create());
         return dynamicRouteService.getInvoker();
     }
 }

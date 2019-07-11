@@ -2,6 +2,8 @@ package com.aliware.tianchi.support;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Author huaili
@@ -52,35 +54,63 @@ public class DyRandomTest {
     }
     public static void main(String[] args){
 
-        Random random = new Random();
+//        Random random = new Random();
+//
+//        double score = random.nextInt(100)/100.00;
+//        int t1=0,t2=0,t3=0;
+//
+//
+//
+//
+//        int kb = 1024*1024;
+//        // 可使用内存
+//        long totalMemory = Runtime.getRuntime().totalMemory() / kb;
+//        // 剩余内存
+//        long freeMemory = Runtime.getRuntime().freeMemory() / kb;
+//        // 最大可使用内存
+//        long maxMemory = Runtime.getRuntime().maxMemory() / kb;
+//
+//        System.out.println(totalMemory);
+//        System.out.println(freeMemory);
+//        System.out.println(maxMemory);
+//
+//        //System.out.println(MonitorUtil.getCpuRate());
+//
+//        MonitorInfoBean mm = new MonitorInfoBean();
+//        mm.setCoreCount(4);
+//        mm.setFreeMem(220);
+//        mm.setAvgCost(1000);
+//
+//        System.out.println(mm.getCalacScore());
 
-        double score = random.nextInt(100)/100.00;
-        int t1=0,t2=0,t3=0;
+
+        int count = 10;
+        int k = 10;
+
+        AtomicLong atomicLong = new AtomicLong();
+        while(k>0) {
+            long startTimeNao = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                //ThreadLocalRandom.current().nextDouble(100.999);
+               // System.nanoTime();
+                Runtime.getRuntime().availableProcessors();
+                //Runtime.getRuntime().freeMemory();
+            }
+            long endTimeNao = System.currentTimeMillis();
+            System.out.println("nanao cost Time=" + (endTimeNao - startTimeNao));
+
+            long startTimeCAS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                atomicLong.incrementAndGet();
+            }
+            long endTimeCAS = System.currentTimeMillis();
+            System.out.println("cas cost Time=" + (endTimeCAS - startTimeCAS));
 
 
+            k--;
+        }
 
-
-        int kb = 1024*1024;
-        // 可使用内存
-        long totalMemory = Runtime.getRuntime().totalMemory() / kb;
-        // 剩余内存
-        long freeMemory = Runtime.getRuntime().freeMemory() / kb;
-        // 最大可使用内存
-        long maxMemory = Runtime.getRuntime().maxMemory() / kb;
-
-        System.out.println(totalMemory);
-        System.out.println(freeMemory);
-        System.out.println(maxMemory);
-
-        //System.out.println(MonitorUtil.getCpuRate());
-
-        MonitorInfoBean mm = new MonitorInfoBean();
-        mm.setCoreCount(4);
-        mm.setFreeMem(220);
-        mm.setAvgCost(1000);
-
-        System.out.println(mm.getCalacScore());
-
+       // System.out.println(atomicLong.get());
 
     }
 }

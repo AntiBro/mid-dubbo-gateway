@@ -22,9 +22,9 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final int BOUND = 10;
 
-    static final double SIZE_D = BOUND;
+    static final double BOUND_D = 0.99;
 
-    static final int PERIOD = 2000;
+    static final int PERIOD = 50;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -34,7 +34,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static volatile ConcurrentHashMap<String,InvokerWrapper> rankInfoMap = new ConcurrentHashMap<>();
 
-    // private Timer timer = new Timer();
+   // private Timer timer = new Timer();
 
     private static ScheduledExecutorService scheduledExecutorService;
 
@@ -43,7 +43,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static StatisService statisService = StatisServiceImpl.create();
 
-    // static Map<String, AtomicLong > countTotal = new HashMap<>();
+   // static Map<String, AtomicLong > countTotal = new HashMap<>();
 
     public static DynamicRouteService create(){
         return INSTANCE;
@@ -75,7 +75,6 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                     total+= entry.getValue().getMonitorInfoBean().getCalacScore();
                 }
 
-                //System.out.println("scheduleAtFixedRate total score="+total);
                 TreeMap<Double, InvokerWrapper> treeMap = new TreeMap<>();
 
                 List<InvokerWrapper> cacheinvokerList = new ArrayList<>();
@@ -83,6 +82,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
                     double rank = entry.getValue().getMonitorInfoBean().getScore()/total;
                     entry.getValue().setRankScore(rank);
+                    System.out.println("invoker= "+entry.getValue().getInvokerId()+" rank"+rank);
                     cacheinvokerList.add(entry.getValue());
                 }
                 Collections.sort(cacheinvokerList);
@@ -91,7 +91,6 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 for(InvokerWrapper invokerWrapper:cacheinvokerList){
                     total+=invokerWrapper.getRankScore();
                     treeMap.put(total,invokerWrapper);
-                    System.out.println("rank score="+total+" invokerId="+invokerWrapper.getInvokerId());
                 }
                 if(rankCache.isEmpty()){
                     rankCache.add(treeMap);
@@ -117,15 +116,9 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     @Override
     public <T> Invoker<T> getInvoker() {
-        double score = ThreadLocalRandom.current().nextInt(BOUND)/SIZE_D;
-
+        double score = ThreadLocalRandom.current().nextDouble(BOUND_D);
         InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
-
-        System.out.println("select invoker id = "+invokerWrapper.getInvoker().getUrl());
-        //  AtomicLong count = countTotal.get(invokerWrapper.getInvokerId());
-        //  count.incrementAndGet();
         return invokerWrapper.getInvoker();
-        //return list.get(ThreadLocalRandom.current().nextInt(list.size()));
     }
 
     @Override
@@ -139,7 +132,6 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
                 map.put(ceilScore,InvokerWrapper.buildWrapper(invoker));
                 rankInfoMap.put(invokerWrapper.getInvokerId(),invokerWrapper);
-                //countTotal.put(invokerWrapper.getInvokerId(),new AtomicLong(1));
             }
             rankCache.add(map);
 
@@ -160,7 +152,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
             if(monitorInfoBean.getFreeMem()>0)
                 monitorInfoBean1.setFreeMem(monitorInfoBean.getFreeMem());
             if(monitorInfoBean.getCoreCount()>0)
-                monitorInfoBean1.setCoreCount(monitorInfoBean.getCoreCount());
+            monitorInfoBean1.setCoreCount(monitorInfoBean.getCoreCount());
 
         }
     }

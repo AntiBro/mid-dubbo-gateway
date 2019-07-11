@@ -31,7 +31,7 @@ public class TestClientFilter implements Filter {
         }finally {
             endtime = endtime + System.currentTimeMillis();
             long cost = endtime - startTime;
-            statisService.addInvokerCostTime(NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort()), cost);
+            statisService.addInvokerCostTime(invoker.getUrl(), cost);
 
         }
 
