@@ -7,6 +7,7 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.LRUCache;
 import org.apache.dubbo.rpc.Invoker;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -23,23 +24,20 @@ public class StatisServiceImpl implements StatisService {
 
     static final double size_d = size;
 
-    private  static AtomicLong count = new AtomicLong(1);
+    private static final AtomicLong count = new AtomicLong(1);
    // CopyOnWriteArrayList list = new CopyOnWriteArrayList();
 
    // LRUCache lruCache = new LRUCache(size);
     private static volatile Map<String,LRUCache> map = new ConcurrentHashMap<>();
 
-    private static volatile Map<String, Double> statisMap = new ConcurrentHashMap<>();
+    private static volatile Map<String,String> cachedAddressMap = new ConcurrentHashMap<>();
+
 
     private static final long VALIDATE_PERIOD = 1000;
 
     private static final double defaultAvgCost = 1000;
 
     private StatisServiceImpl(){}
-
-
-    static ExecutorService executor = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
-            Runtime.getRuntime().availableProcessors(),300, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(8000000));
 
 
 
@@ -62,31 +60,23 @@ public class StatisServiceImpl implements StatisService {
     }
 
     @Override
-    public void addInvokerCostTime(String invokerId, double cost) {
+    public void addInvokerCostTime(URL url, double cost) {
 
         CompletableFuture.runAsync(()->{
+            String urlId = url.getHost()+":"+url.getPort();
+            String invokerId = cachedAddressMap.get(urlId);
+            if(invokerId == null){
+                invokerId = NetUtil.getAddress(url.getHost(),url.getPort());
+                cachedAddressMap.put(urlId,invokerId);
+            }
             final LRUCache cache = map.get(invokerId);
             if(cache != null) {
-                // synchronized (cache) {
-                // long  id = count.incrementAndGet();
-                cache.put(System.nanoTime(), new CostTime(cost,System.currentTimeMillis()));
-                //System.out.println("current costId="+id);
-                //  }
+                // CAS 操作 比 获取 系统时间 要快 近 2倍
+                cache.put(count.incrementAndGet(), new CostTime(cost,System.currentTimeMillis()));
             }
 
         });
-//        executor.execute(()->{
-//
-//            final LRUCache cache = map.get(invokerId);
-//            if(cache != null) {
-//                // synchronized (cache) {
-//                // long  id = count.incrementAndGet();
-//                cache.put(System.nanoTime(), new CostTime(cost,System.currentTimeMillis()));
-//                //System.out.println("current costId="+id);
-//                //  }
-//            }
-//
-//        });
+
 
 
     }
@@ -98,6 +88,8 @@ public class StatisServiceImpl implements StatisService {
 
     @Override
     public Map<String, Double> getStatis() {
+        Map<String, Double> statisMap = new HashMap<>();
+
         for(Map.Entry<String,LRUCache> entry:map.entrySet()){
             String invokerId = entry.getKey();
             LRUCache cache = entry.getValue();

@@ -1,5 +1,6 @@
 package com.aliware.tianchi.support;
 
+import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.List;
@@ -10,10 +11,10 @@ public interface StatisService {
     <T> void initInvokers(List<Invoker<T>> invokers);
     /**
      *
-     * @param invokerId  {ip:port}
+     * @param url  {ip:port}
      * @param cost
      */
-    void addInvokerCostTime(String invokerId,double cost);
+    void addInvokerCostTime(URL url, double cost);
 
 
     /**

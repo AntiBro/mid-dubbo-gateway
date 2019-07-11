@@ -22,7 +22,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final int BOUND = 10;
 
-    static final double SIZE_D = BOUND;
+    static final double BOUND_D = 0.999;
 
     static final int PERIOD = 2000;
 
@@ -117,7 +117,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     @Override
     public <T> Invoker<T> getInvoker() {
-        double score = ThreadLocalRandom.current().nextInt(BOUND)/SIZE_D;
+        double score = ThreadLocalRandom.current().nextDouble(BOUND_D);
 
         InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
 
