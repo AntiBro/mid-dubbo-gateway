@@ -9,13 +9,14 @@ import sun.misc.Contended;
  * @Description MonitorInfoBean
  **/
 public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
-
+    @Contended
     private String providerId;
 
     private int coreCount = 1;
-
+    @Contended
     private double rateOfCpu;
 
+    @Contended
     private double score;
 
     private String name;
@@ -25,7 +26,7 @@ public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
     private long freeMem =1 ;
 
     @Contended
-    private double avgCost = 1000L;
+    private double avgCost = 1000.00;
 
 
     public double getAvgCost() {
