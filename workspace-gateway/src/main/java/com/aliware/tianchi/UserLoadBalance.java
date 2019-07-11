@@ -2,7 +2,6 @@ package com.aliware.tianchi;
 
 import com.aliware.tianchi.support.DynamicRouteService;
 import com.aliware.tianchi.support.impl.DynamicRouteServiceImpl;
-import com.aliware.tianchi.support.impl.StatisServiceImpl;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
@@ -10,7 +9,6 @@ import org.apache.dubbo.rpc.RpcException;
 import org.apache.dubbo.rpc.cluster.LoadBalance;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author daofeng.xjf

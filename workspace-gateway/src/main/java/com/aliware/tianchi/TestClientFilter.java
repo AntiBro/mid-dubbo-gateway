@@ -1,6 +1,5 @@
 package com.aliware.tianchi;
 
-import com.aliware.tianchi.support.NetUtil;
 import com.aliware.tianchi.support.StatisService;
 import com.aliware.tianchi.support.impl.StatisServiceImpl;
 import org.apache.dubbo.common.Constants;
@@ -26,7 +25,7 @@ public class TestClientFilter implements Filter {
             Result result = invoker.invoke(invocation);
             return result;
         }catch (Exception e){
-            endtime = endtime + 1000;
+            endtime = endtime + 2000;
             throw e;
         }finally {
             endtime = endtime + System.currentTimeMillis();
