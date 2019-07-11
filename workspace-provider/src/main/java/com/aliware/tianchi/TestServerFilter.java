@@ -18,16 +18,17 @@ import org.apache.dubbo.rpc.RpcException;
  */
 @Activate(group = Constants.PROVIDER)
 public class TestServerFilter implements Filter {
+
+   /// private static volatile String id;
+
+
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try{
-            long startTime = System.currentTimeMillis();
             Result result = invoker.invoke(invocation);
-            long endTime = System.currentTimeMillis();
-            String id = NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort());
-            //System.out.println("TestServerFilter invoker id=["+ id +"] cost="+(endTime-startTime)+"ms");
-            if(IDUtil.getID() == null){
-                IDUtil.setID(id);
+            if(IDHolder.getID() == null){
+                String id = NetUtil.getAddress(invoker.getUrl().getHost(),invoker.getUrl().getPort());
+                IDHolder.setID(id);
             }
             return result;
         }catch (Exception e){

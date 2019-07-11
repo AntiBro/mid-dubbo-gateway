@@ -24,7 +24,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double BOUND_D = 0.999;
 
-    static final int PERIOD = 40;
+    static final int PERIOD = 100;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -82,6 +82,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
                     double rank = entry.getValue().getMonitorInfoBean().getScore()/total;
                     entry.getValue().setRankScore(rank);
+                    System.out.println("invoker= "+entry.getValue().getInvokerId()+" rank"+rank);
                     cacheinvokerList.add(entry.getValue());
                 }
                 Collections.sort(cacheinvokerList);
