@@ -21,8 +21,8 @@ public class CallbackListenerImpl implements CallbackListener {
     @Override
     public void receiveServerMsg(String msg) {
        // Gson gson = new Gson();
-        MonitorInfoBean monitorInfoBean = MonitorUtil.parseStr(msg);
-        dynamicRouteService.updateInvokersRankByProviderMetaInfo(monitorInfoBean.getProviderId(),monitorInfoBean);
+//        MonitorInfoBean monitorInfoBean = MonitorUtil.parseStr(msg);
+//        dynamicRouteService.updateInvokersRankByProviderMetaInfo(monitorInfoBean.getProviderId(),monitorInfoBean);
         //System.out.println("receive msg from server :" + msg);
     }
 

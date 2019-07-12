@@ -21,7 +21,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double BOUND_D = 0.99;
 
-    static final int PERIOD = 200;
+    static final int PERIOD = 50;
 
     static volatile  MapHolder mapholder = new MapHolder();
 

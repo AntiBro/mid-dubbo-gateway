@@ -19,23 +19,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CallbackServiceImpl implements CallbackService {
 
     public CallbackServiceImpl() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!listeners.isEmpty()) {
-                    for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
-                        try {
-
-                            if(IDHolder.getID() != null ){
-                                // send notification for change
-                                entry.getValue().receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID()));
-                            }
-                        } catch (Throwable t1) {
-                        }
-                    }
-                }
-            }
-        }, 0, 50);
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (!listeners.isEmpty()) {
+//                    for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
+//                        try {
+//
+//                            if(IDHolder.getID() != null ){
+//                                // send notification for change
+//                                entry.getValue().receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID()));
+//                            }
+//                        } catch (Throwable t1) {
+//                        }
+//                    }
+//                }
+//            }
+//        }, 0, 50);
     }
 
     private Timer timer = new Timer();
@@ -51,7 +51,7 @@ public class CallbackServiceImpl implements CallbackService {
         listeners.put(key, listener);
         if(IDHolder.getID() != null ){
             // send notification for change
-            listener.receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID()));
+           // listener.receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID()));
 
         }
     }
