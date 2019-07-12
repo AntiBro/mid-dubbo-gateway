@@ -1,9 +1,6 @@
 package com.aliware.tianchi.support.impl;
 
-import com.aliware.tianchi.support.DynamicRouteService;
-import com.aliware.tianchi.support.InvokerWrapper;
-import com.aliware.tianchi.support.MonitorInfoBean;
-import com.aliware.tianchi.support.StatisService;
+import com.aliware.tianchi.support.*;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.*;
@@ -25,6 +22,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
     static final double BOUND_D = 0.99;
 
     static final int PERIOD = 20;
+
+    static volatile  MapHolder mapholder = new MapHolder();
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -92,11 +91,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                     total+=invokerWrapper.getRankScore();
                     treeMap.put(total,invokerWrapper);
                 }
-                if(rankCache.isEmpty()){
-                    rankCache.add(treeMap);
-                } else {
-                    rankCache.set(0,treeMap);
-                }
+                mapholder.write(treeMap);
 
                 System.out.println("copyList size="+rankInfoMap.size());
 
@@ -118,7 +113,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
     @Override
     public <T> Invoker<T> getInvoker() {
         double score = ThreadLocalRandom.current().nextDouble(BOUND_D);
-        InvokerWrapper invokerWrapper = rankCache.get(0).ceilingEntry(score).getValue();
+        TreeMap<Double, InvokerWrapper> map = (TreeMap) mapholder.read();
+        InvokerWrapper invokerWrapper = map.ceilingEntry(score).getValue();
         return invokerWrapper.getInvoker();
     }
 
@@ -136,7 +132,8 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                         map.put(ceilScore, InvokerWrapper.buildWrapper(invoker));
                         rankInfoMap.put(invokerWrapper.getInvokerId(), invokerWrapper);
                     }
-                    rankCache.add(map);
+                    //rankCache.add(map);
+                    mapholder.write(map);
 
                     statisService.initInvokers(invokers);
 

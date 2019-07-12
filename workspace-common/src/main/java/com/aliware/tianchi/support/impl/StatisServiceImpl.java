@@ -20,7 +20,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static StatisService INSTANCE = new StatisServiceImpl();
 
-    static final int size = 40;
+    static final int size = 30;
 
     static final double size_d = size;
 
@@ -35,7 +35,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static final long VALIDATE_PERIOD = 1000;
 
-    private static final double defaultAvgCost = 1000;
+    private static final double defaultAvgCost = 100;
 
     private StatisServiceImpl(){}
 
