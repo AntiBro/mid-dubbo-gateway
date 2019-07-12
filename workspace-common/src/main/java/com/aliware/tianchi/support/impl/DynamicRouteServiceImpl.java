@@ -81,7 +81,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 for(Map.Entry<String,InvokerWrapper> entry:rankInfoMap.entrySet()){
                     double rank = entry.getValue().getMonitorInfoBean().getScore()/total;
                     entry.getValue().setRankScore(rank);
-                    System.out.println("invoker= "+entry.getValue().getInvokerId()+" rank"+rank);
+                    //System.out.println("invoker= "+entry.getValue().getInvokerId()+" rank"+rank);
                     cacheinvokerList.add(entry.getValue());
                 }
                 Collections.sort(cacheinvokerList);
@@ -93,7 +93,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                 }
                 mapholder.write(treeMap);
 
-                System.out.println("copyList size="+rankInfoMap.size());
+               // System.out.println("copyList size="+rankInfoMap.size());
 
 //                for(Map.Entry<String,AtomicLong> entry:countTotal.entrySet()){
 //                    System.out.println("invokerId= "+entry.getKey()+"  shotCount="+entry.getValue().get());

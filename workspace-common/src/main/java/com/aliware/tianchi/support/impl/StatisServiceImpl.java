@@ -20,7 +20,7 @@ public class StatisServiceImpl implements StatisService {
 
     private static StatisService INSTANCE = new StatisServiceImpl();
 
-    static final int size = 30;
+    static final int size = 20;
 
     static final double size_d = size;
 
