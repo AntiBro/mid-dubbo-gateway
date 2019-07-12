@@ -27,12 +27,10 @@ public class CallbackServiceImpl implements CallbackService {
                         try {
 
                             if(IDHolder.getID() != null ){
-                                entry.getValue().receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID())); // send notification for change
-
+                                // send notification for change
+                                entry.getValue().receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID()));
                             }
-                           // entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
                         } catch (Throwable t1) {
-                            //listeners.remove(entry.getKey());
                         }
                     }
                 }
@@ -51,11 +49,9 @@ public class CallbackServiceImpl implements CallbackService {
     @Override
     public void addListener(String key, CallbackListener listener) {
         listeners.put(key, listener);
-       // MonitorInfoBean monitorInfoBean = MonitorUtil.getMonitorInfoBean();
         if(IDHolder.getID() != null ){
-//            Gson gson = new Gson();
-//            monitorInfoBean.setProviderId(IDHolder.getID());
-            listener.receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID())); // send notification for change
+            // send notification for change
+            listener.receiveServerMsg(MonitorUtil.getMonitorInfoMsg(IDHolder.getID()));
 
         }
     }

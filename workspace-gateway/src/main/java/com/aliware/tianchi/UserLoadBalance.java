@@ -24,11 +24,7 @@ public class UserLoadBalance implements LoadBalance {
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         DynamicRouteService dynamicRouteService = DynamicRouteServiceImpl.create();
-
-        //System.out.println("当前的Invoker 个数:"+invokers.size());
-
         dynamicRouteService.initInvokersRank(invokers);
-//        dynamicRouteService.scheduleUpdateInvokersRank(StatisServiceImpl.create());
         return dynamicRouteService.getInvoker();
     }
 }

@@ -16,7 +16,7 @@ import java.util.concurrent.*;
  **/
 public class DynamicRouteServiceImpl implements DynamicRouteService {
 
-    static volatile boolean init = false;
+    static volatile Boolean init = false;
 
     static volatile boolean startTask = false;
 
@@ -24,7 +24,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double BOUND_D = 0.99;
 
-    static final int PERIOD = 30;
+    static final int PERIOD = 50;
 
     static volatile CopyOnWriteArrayList<TreeMap<Double, InvokerWrapper>> rankCache = new CopyOnWriteArrayList();
 
@@ -98,6 +98,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                     rankCache.set(0,treeMap);
                 }
 
+                System.out.println("copyList size="+rankInfoMap.size());
 
 //                for(Map.Entry<String,AtomicLong> entry:countTotal.entrySet()){
 //                    System.out.println("invokerId= "+entry.getKey()+"  shotCount="+entry.getValue().get());
@@ -124,22 +125,26 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
     @Override
     public <T> void initInvokersRank(List<Invoker<T>> invokers) {
         if(!init){
-            TreeMap<Double,InvokerWrapper> map = new TreeMap<>();
-            double score = 1.00/invokers.size();
-            double ceilScore = 0;
-            for(Invoker invoker:invokers){
-                ceilScore+= score;
-                InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
-                map.put(ceilScore,InvokerWrapper.buildWrapper(invoker));
-                rankInfoMap.put(invokerWrapper.getInvokerId(),invokerWrapper);
+            synchronized (init) {
+                if(!init) {
+                    TreeMap<Double, InvokerWrapper> map = new TreeMap<>();
+                    double score = 1.00 / invokers.size();
+                    double ceilScore = 0;
+                    for (Invoker invoker : invokers) {
+                        ceilScore += score;
+                        InvokerWrapper invokerWrapper = InvokerWrapper.buildWrapper(invoker);
+                        map.put(ceilScore, InvokerWrapper.buildWrapper(invoker));
+                        rankInfoMap.put(invokerWrapper.getInvokerId(), invokerWrapper);
+                    }
+                    rankCache.add(map);
+
+                    statisService.initInvokers(invokers);
+
+                    list.addAll(invokers);
+
+                    init = true;
+                }
             }
-            rankCache.add(map);
-
-            statisService.initInvokers(invokers);
-
-            list.addAll(invokers);
-
-            init = true;
         }
     }
 
