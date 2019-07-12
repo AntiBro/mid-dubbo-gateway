@@ -72,7 +72,7 @@ public class StatisServiceImpl implements StatisService {
             final LRUCache cache = map.get(invokerId);
             if(cache != null) {
                 // CAS 操作 比 获取 系统时间 要快 近 2倍
-                cache.put(count.incrementAndGet(), new CostTime(cost,System.currentTimeMillis()));
+                cache.put(count.incrementAndGet(), cost);
             }
 
         });
@@ -96,11 +96,11 @@ public class StatisServiceImpl implements StatisService {
             long total = 0;
             int size = 0;
             for(Object cost:cache.values()){
-                CostTime costTime = (CostTime) cost;
-                if(validateCostTime(costTime.getTimeStramp())){
-                    total+= (double)costTime.getCostTime();
-                    size++;
-                }
+                //double costTime = (double) cost;
+                //if(validateCostTime(costTime.getTimeStramp())){
+                total+= (double)cost;
+                size++;
+                //}
             }
             double avgCost = defaultAvgCost;
             if(size>0)

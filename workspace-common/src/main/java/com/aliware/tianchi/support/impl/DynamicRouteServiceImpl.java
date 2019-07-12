@@ -21,7 +21,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
 
     static final double BOUND_D = 0.99;
 
-    static final int PERIOD = 100;
+    static final int PERIOD = 200;
 
     static volatile  MapHolder mapholder = new MapHolder();
 
@@ -84,7 +84,7 @@ public class DynamicRouteServiceImpl implements DynamicRouteService {
                     //System.out.println("invoker= "+entry.getValue().getInvokerId()+" rank"+rank);
                     cacheinvokerList.add(entry.getValue());
                 }
-                Collections.sort(cacheinvokerList);
+                //Collections.sort(cacheinvokerList);
 
                 total = 0;
                 for(InvokerWrapper invokerWrapper:cacheinvokerList){
