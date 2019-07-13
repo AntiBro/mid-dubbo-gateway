@@ -25,7 +25,7 @@ public class TestClientFilter implements Filter {
             Result result = invoker.invoke(invocation);
             return result;
         }catch (Exception e){
-            endtime = endtime + 2000;
+            //endtime = endtime;
             throw e;
         }finally {
             endtime = endtime + System.currentTimeMillis();
