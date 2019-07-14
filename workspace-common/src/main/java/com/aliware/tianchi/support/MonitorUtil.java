@@ -243,7 +243,7 @@ public class MonitorUtil {
         StringBuilder sb = new StringBuilder();
         sb.append(Runtime.getRuntime().availableProcessors())
                 .append(",")
-                .append(Runtime.getRuntime().freeMemory()/MB)
+                .append(Runtime.getRuntime().maxMemory()/MB)
                 .append(",")
                 .append(provideId);
         return sb.toString();

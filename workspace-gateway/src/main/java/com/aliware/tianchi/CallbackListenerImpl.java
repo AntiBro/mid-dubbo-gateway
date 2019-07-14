@@ -23,7 +23,7 @@ public class CallbackListenerImpl implements CallbackListener {
        // Gson gson = new Gson();
         MonitorInfoBean monitorInfoBean = MonitorUtil.parseStr(msg);
         dynamicRouteService.updateInvokersRankByProviderMetaInfo(monitorInfoBean.getProviderId(),monitorInfoBean);
-        //System.out.println("receive msg from server :" + msg);
+        System.out.println("网管receive msg from server [" + msg+"]");
     }
 
 }
