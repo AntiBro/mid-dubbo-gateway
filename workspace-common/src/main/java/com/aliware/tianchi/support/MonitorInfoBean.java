@@ -66,7 +66,7 @@ public class MonitorInfoBean implements Comparable<MonitorInfoBean> {
     }
 
     public double getCalacScore(){
-        score = coreCount+100.00/avgCost +freeMem/1024.00;
+        score = coreCount+50.00/avgCost +freeMem/1024.00;
         //score = 1000.00/avgCost;
 
         // System.out.println("MonitorInfoBean score="+score+"  coreCount="+coreCount+"  freemMm="+freeMem+"  avgCost="+avgCost);
